@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Favicon Icon -->
+        <link rel="icon" type="image/x-icon" href="./images/favicon.png">
+        <!-- Link with Bootstrap 5.0 -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+        <!-- Link with jQuery library -->
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+        <!-- Link with Popper.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+        <!-- Link with Axios library -->
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <!-- Link CSS file styles -->
+        <link rel="stylesheet" href="./css/admin.css">
+        <link rel="stylesheet" href="./css/global.css">
+        <!-- Link with Google Font -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Work+Sans&display=swap" rel="stylesheet">
+        <!-- Link with FontAwesome for icons -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css"
+            integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA=="
+            crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <title>Admin Panel</title>
+    </head>
+    <body>
+        <!-- Navigation Bar -->
+        <nav class="navbar navbar-expand-md navbar-light fixed-top" aria-label="Navigation Bar">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/"><img src="./images/logo.png" alt="Logo" id="logo"></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navigation-bar"
+                    aria-controls="navigation-bar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            
+                <div class="collapse navbar-collapse" id="navigation-bar">
+                    <div class="navbar-nav me-auto mb-2 mb-md-0">
+                        <h3><strong>Admin Panel</strong></h3>
+                    </div>
+                    <a class="btn btn-primary" id="view-users" style="margin:0px 5px;" href="/admin">View Users<i class="fa-regular fa-user icon" style="padding-right:3px;"></i></a>
+                    <a class="btn btn-primary" id="add-user" style="margin:0px 5px;" href="/signup">Add User<i class="fa-regular fa-add icon" style="padding-right:3px;"></i></a>
+                    <a class="btn btn-primary" id="edit-pon" style="margin:0px 5px;" href="/delete.html">Modify PON<i class="fa-regular fa-edit icon" style="padding-right:3px;"></i></a>
+                    <a class="btn btn-primary" id="logout" style="margin:0px 5px;" href="/">Logout<i class="fa-solid fa-right-from-bracket" style="padding-right:5px;"></i></a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- User Tables -->
+        <div class="container" id="user-table" style="padding-top:150px;">
+            <h1>Account List</h1>
+            <hr>
+            <table class="table table-light table-striped table-borderless">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Passwords</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">Driver No.</th>
+                    </tr>
+                </thead>
+                <tbody id="user-table-body">
+                </tbody>
+            </table>
+        </div>
+
+        <div id="toast"></div>
+
+        <!-- Get today's date! -->
+        <script>
+            // Get date's date
+            var dateToday = new Date()
+        </script>
+
+        <!-- Redirect user to login page if not logged in -->
+        <script>
+            // Get token from the local storage
+            const token = localStorage.getItem("token")
+            const loggedInUserID = parseInt(localStorage.getItem("loggedInUserID"))
+
+            // Check if token or logged in userid is defined
+            if (token === null || isNaN(loggedInUserID)) {
+                window.location.assign("/login")
+            }
+            else {
+                $("#logout").click(() => {
+                    localStorage.clear()
+                    window.location.assign("/login")
+                })
+            }
+        </script>
+
+
+        <!-- Form Validation -->
+        <script>
+            (function () {
+                'use strict'
+                var forms = document.querySelectorAll('.needs-validation')
+                Array.prototype.slice.call(forms)
+                    .forEach(function (form) {
+                        form.addEventListener('submit', function (event) {
+                            if (!form.checkValidity()) {
+                                event.preventDefault()
+                                event.stopPropagation()
+                            }
+                            form.classList.add('was-validated')
+                        }, false)
+                    })
+            })()
+        </script>
+
+        <!-- Append Table Contents -->
+        <script>
+            const baseURL = "http://localhost:8081"
+            // Axios GET method to get user information
+            axios.get(`${baseURL}/users/`, {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            })
+                .then((response) => {
+                    const userList = response.data
+                    if (userList.length > 0) {                        
+                        userList.forEach((user) => {
+                            if (!isNaN(user.driverNo)){
+                                driverNum = 'Nil'
+                            }
+                            else {
+                                driverNum = user.driverNo
+                            }
+                            const tableRow = `
+                            <tr>
+                                <th>${user.userid}</th>
+                                <th>${user.username}</th>
+                                <th>${user.password}</th>
+                                <th>${user.role}</th>
+                                <th>${driverNum}</th>
+                            </tr>
+                            `
+                            $("#user-table-body").append(tableRow)
+                        })
+                    }
+                })
+
+                .catch((error) => {
+                    console.log(error.response.data)
+                })
+        </script>
+    </body>
+</html>

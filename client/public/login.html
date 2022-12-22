@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Favicon Icon -->
+        <link rel="icon" type="image/x-icon" href="./images/favicon.png">
+        <!-- Link with Bootstrap 5.0 -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <!-- Link with jQuery library -->
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+        <!-- Link with Popper.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <!-- Link with Axios library -->
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <!-- Link CSS file styles -->
+        <link rel="stylesheet" href="./css/login.css">
+        <link rel="stylesheet" href="./css/global.css">
+        <!-- Link with Google Font -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Work+Sans&display=swap" rel="stylesheet">
+        <!-- Link with Vanta.js animated background -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.waves.min.js"></script>
+        <script>
+            window.addEventListener('DOMContentLoaded', () => {
+                VANTA.WAVES({
+                    el: "#vanta",
+                    mouseControls: true,
+                    touchControls: true,
+                    gyroControls: true,
+                    minHeight: 200.00,
+                    minWidth: 200.00,
+                    scale: 1.00,
+                    scaleMobile: 1.00
+                })
+            })
+        </script>
+        <title>Login</title>
+    </head>
+    <body>
+        <!-- Vanta.js Animated Background Div -->
+        <div id="vanta"></div>
+
+        <!-- Form Container -->
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+                    <div class="card border-0 shadow rounded-3 my-5" id="login-card">
+                        <a href="/"><img id="logo" src="./images/logo.png" alt="logo"></a>
+                        <div class="card-body p-4 p-sm-5">
+                            <h1 class="card-title text-center mb-5">Log In</h1>
+                            <form class="needs-validation" id="login-form" novalidate>
+                                <div class="form-floating mb-3">
+                                    <!-- Username Input -->
+                                    <input type="username" class="form-control" id="username" placeholder="Username" required>
+                                    <label for="username">Username</label>
+                                    <div class="invalid-feedback">
+                                        Please enter your username!
+                                    </div>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <!-- Password Input -->
+                                    <input type="password" class="form-control" id="password" placeholder="Password" required>
+                                    <label for="password">Password</label>
+                                    <div class="invalid-feedback">
+                                        Please enter your password!
+                                    </div>
+                                </div>
+                                <!-- Form Submit Button -->
+                                <div class="d-grid">
+                                    <button class="btn btn-primary btn-login fw-bold" type="submit">Sign in</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- If user is already logged in, redirect to home page -->
+        <script>
+            const token = window.localStorage.getItem("token")
+            const loggedInUserID = window.localStorage.getItem("loggedInUserID")
+            if (!(token === null || isNaN(loggedInUserID))) {
+                
+                if(role == 'Admin') {
+                            window.location.href = "/admin.html"
+                        }
+                else if(role == 'Requester') {
+                            window.location.href = "/request.html"
+                        }
+                else if(role == 'DO') {
+                            window.location.href = "/DO.html"
+                        }
+                else if(role == 'CSO') {
+                            window.location.href = "/cso.html"
+                        }
+                else if(role == 'AETOS') {
+                            window.location.href = "/AETOS.html"
+                        }
+                else if(role == 'Transport') {
+                            window.location.href = "/transport.html"
+                        }
+                else {
+                            window.location.href = "/"
+                        }
+            }
+        </script>
+        
+        <!-- Script to disable form submissions if there are empty fields -->
+        <script>
+            (() => {
+                'use strict'
+                window.addEventListener('load', () => {
+                    // Get all forms that have custom validation
+                    var forms = document.getElementsByClassName("needs-validation")
+
+                    // Loop over them and prevent submission
+                    var validation = Array.prototype.filter.call(forms, (form) => {
+                        form.addEventListener('submit', (event) => {
+                            if (form.checkValidity() == false) {
+                                event.preventDefault()
+                                event.stopPropagation()
+                            }
+                            form.classList.add('was-validated')
+                        }, false)
+                    })
+                }, false)
+            })()
+        </script>
+
+        <!-- jQuery and Axios Script to process login information of user -->
+        <script>
+            const baseURL = "http://localhost:8081"
+            $("#login-form").submit((event) => {
+                // Prevent the page from loading
+                event.preventDefault()
+
+                // Get submitted username and password
+                const username = $("#username").val()
+                const password = $("#password").val()
+                const requestBody = {
+                    username: username,
+                    password: password
+                }
+
+                axios.post(`${baseURL}/login`, requestBody)
+                // Store login information (token and userid of logged in user) into local storage
+                    .then((response) => {
+                        const role = response.data.role
+                        const token = response.data.token
+                        const driverNo = response.data.driverNo
+                        const loggedInUserID = response.data.userid
+                        localStorage.setItem("token", token)
+                        localStorage.setItem("role", role)
+                        localStorage.setItem("loggedInUserID", loggedInUserID)
+                        localStorage.setItem("Driver No.", driverNo)
+                        if(role == 'Admin') {
+                            window.location.href = "/admin.html"
+                        }
+                        else if(role == 'Requester') {
+                            window.location.href = "/request.html"
+                        }
+                        else if(role == 'DO') {
+                            window.location.href = "/DO.html"
+                        }
+                        else if(role == 'CSO') {
+                            window.location.href = "/CSO.html"
+                        }
+                        else if(role == 'AETOS') {
+                            window.location.href = "/AETOS.html"
+                        }
+                        else if(role == 'Transport') {
+                            
+                            window.location.href = "/transport.html"
+                            
+                        }
+                        else {
+                            window.location.href = "/"
+                        }
+                        
+                    })
+                    // Capture errors if any
+                    .catch((error) => {
+                        alert("Invalid username or password!")
+                        console.log(error)
+                    })
+            })
+        </script>
+    </body>
+</html>
